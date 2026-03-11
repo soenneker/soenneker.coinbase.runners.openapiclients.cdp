@@ -47,7 +47,7 @@
         <PackageReference Include="Soenneker.Extensions.LoggerConfiguration" Version="4.0.1186" />
         <PackageReference Include="Microsoft.Extensions.Hosting" Version="10.0.4" />
         <PackageReference Include="Soenneker.Managers.Runners" Version="4.0.1897" />
-        <PackageReference Include="Soenneker.OpenApi.Fixer" Version="4.0.165" />
+        <PackageReference Include="Soenneker.OpenApi.Fixer" Version="4.0.166" />
         <PackageReference Include="Soenneker.Utils.File.Download" Version="4.0.1479" />
         <PackageReference Include="Soenneker.Utils.Yaml" Version="4.0.9" />
     </ItemGroup>
