@@ -1,4 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
+using Soenneker.Kiota.Util.Registrars;
 using Soenneker.Managers.Runners.Registrars;
 using Soenneker.Coinbase.Runners.OpenApiClients.Cdp.Utils;
 using Soenneker.Coinbase.Runners.OpenApiClients.Cdp.Utils.Abstract;
@@ -26,7 +27,8 @@ public static class Startup
                 .AddRunnersManagerAsScoped()
                 .AddFileDownloadUtilAsScoped()
                 .AddOpenApiFixerAsScoped()
-                .AddYamlUtilAsScoped();
+                .AddYamlUtilAsScoped()
+                .AddKiotaUtilAsScoped();
 
         return services;
     }

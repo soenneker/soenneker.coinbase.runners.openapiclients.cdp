@@ -11,6 +11,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Soenneker.Extensions.ValueTask;
+using Soenneker.Kiota.Util.Abstract;
 using Soenneker.Utils.Directory.Abstract;
 using Soenneker.Utils.File.Abstract;
 using Soenneker.Utils.File.Download.Abstract;
@@ -27,6 +28,7 @@ public sealed class FileOperationsUtil : IFileOperationsUtil
     private readonly IGitUtil _gitUtil;
     private readonly IDotnetUtil _dotnetUtil;
     private readonly IProcessUtil _processUtil;
+    private readonly IKiotaUtil _kiotaUtil;
     private readonly IYamlUtil _yamlUtil;
     private readonly IOpenApiFixer _openApiFixer;
     private readonly IFileDownloadUtil _fileDownloadUtil;
@@ -34,12 +36,13 @@ public sealed class FileOperationsUtil : IFileOperationsUtil
     private readonly IDirectoryUtil _directoryUtil;
 
     public FileOperationsUtil(ILogger<FileOperationsUtil> logger, IGitUtil gitUtil, IDotnetUtil dotnetUtil, IProcessUtil processUtil, IYamlUtil yamlUtil,
-        IOpenApiFixer openApiFixer, IFileDownloadUtil fileDownloadUtil, IFileUtil fileUtil, IDirectoryUtil directoryUtil)
+        IOpenApiFixer openApiFixer, IFileDownloadUtil fileDownloadUtil, IFileUtil fileUtil, IDirectoryUtil directoryUtil, IKiotaUtil kiotaUtil)
     {
         _logger = logger;
         _gitUtil = gitUtil;
         _dotnetUtil = dotnetUtil;
         _processUtil = processUtil;
+        _kiotaUtil = kiotaUtil;
         _yamlUtil = yamlUtil;
         _openApiFixer = openApiFixer;
         _fileDownloadUtil = fileDownloadUtil;
@@ -63,7 +66,7 @@ public sealed class FileOperationsUtil : IFileOperationsUtil
 
         await _yamlUtil.SaveAsJson(yamlFilePath, jsonFilePath, true, cancellationToken);
 
-        await _processUtil.Start("dotnet", null, "tool update --global Microsoft.OpenApi.Kiota", waitForExit: true, cancellationToken: cancellationToken);
+        await _kiotaUtil.EnsureInstalled(cancellationToken);
 
         string fixedFilePath = Path.Combine(gitDirectory, "fixed.json");
 
@@ -74,10 +77,7 @@ public sealed class FileOperationsUtil : IFileOperationsUtil
 
         await DeleteAllExceptCsproj(srcDirectory, cancellationToken);
 
-        await _processUtil.Start("kiota", gitDirectory,
-                              $"kiota generate -l CSharp -d \"{fixedFilePath}\" -o src/{Constants.Library} -c CoinbaseCdpOpenApiClient -n {Constants.Library}", waitForExit: true,
-                              cancellationToken: cancellationToken)
-                          .NoSync();
+        await _kiotaUtil.Generate(fixedFilePath, "CoinbaseCdpOpenApiClient", Constants.Library, gitDirectory, cancellationToken).NoSync();
 
         await BuildAndPush(gitDirectory, cancellationToken)
             .NoSync();
