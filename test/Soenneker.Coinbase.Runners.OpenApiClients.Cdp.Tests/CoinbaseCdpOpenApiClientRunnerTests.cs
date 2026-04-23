@@ -1,16 +1,15 @@
-using Soenneker.Tests.FixturedUnit;
-using Xunit;
+using Soenneker.Tests.HostedUnit;
 
 namespace Soenneker.Coinbase.Runners.OpenApiClients.Cdp.Tests;
 
-[Collection("Collection")]
-public sealed class CoinbaseCdpOpenApiClientRunnerTests : FixturedUnitTest
+[ClassDataSource<Host>(Shared = SharedType.PerTestSession)]
+public sealed class CoinbaseCdpOpenApiClientRunnerTests : HostedUnitTest
 {
-    public CoinbaseCdpOpenApiClientRunnerTests(Fixture fixture, ITestOutputHelper output) : base(fixture, output)
+    public CoinbaseCdpOpenApiClientRunnerTests(Host host) : base(host)
     {
     }
 
-    [Fact]
+    [Test]
     public void Default()
     {
 
