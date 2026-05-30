@@ -54,15 +54,14 @@ public sealed class FileOperationsUtil : IFileOperationsUtil
         string gitDirectory = await _gitUtil.CloneToTempDirectory($"https://github.com/soenneker/{Constants.Library.ToLowerInvariantFast()}",
             cancellationToken: cancellationToken);
 
-        string targetFilePath = Path.Combine(gitDirectory, "spec3.json");
+        string targetFilePath = Path.Combine(gitDirectory, "openapi.yaml");
+        string jsonFilePath = Path.Combine(gitDirectory, "spec3.json");
 
         await _fileUtil.DeleteIfExists(targetFilePath, cancellationToken: cancellationToken);
+        await _fileUtil.DeleteIfExists(jsonFilePath, cancellationToken: cancellationToken);
+
         string yamlFilePath = await _fileDownloadUtil.Download("https://raw.githubusercontent.com/coinbase/cdp-sdk/refs/heads/main/openapi.yaml", targetFilePath,
             fileExtension: ".yaml", cancellationToken: cancellationToken) ?? targetFilePath;
-
-        string jsonFilePath = Path.ChangeExtension(yamlFilePath, ".json");
-
-        await _fileUtil.DeleteIfExists(jsonFilePath, cancellationToken: cancellationToken);
 
         await _yamlUtil.SaveAsJson(yamlFilePath, jsonFilePath, true, cancellationToken);
 
